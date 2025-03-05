@@ -11,4 +11,8 @@ router
     .route('/:id')
     .delete(warehousesController.remove);
 
+router
+.route("/:id")
+.get(warehousesController.findOne);
+
 export default router;
