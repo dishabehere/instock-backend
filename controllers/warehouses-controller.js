@@ -12,7 +12,7 @@ const index = async (_req, res) => {
     res.status(500).send(`Error retrieving Warehouses List: ${error}`);
   }
 }
-
 export {
-  index
+  index,
+  findOne
 }

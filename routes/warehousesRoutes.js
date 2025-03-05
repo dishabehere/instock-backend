@@ -7,4 +7,8 @@ router
 .route('/')
 .get(warehousesController.index);
 
+router
+.route("/:id")
+.get(warehousesController.findOne);
+
 export default router;
