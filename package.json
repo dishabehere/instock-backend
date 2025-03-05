@@ -2,6 +2,7 @@
   "name": "instock-backend",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run",
