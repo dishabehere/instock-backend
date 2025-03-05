@@ -4,10 +4,12 @@ const knex = initKnex(configuration);
 
 const index = async (_req, res) => {
   try {
-    const data = await knex('warehouses');
+    const rawData = await knex('warehouses');
+    const data = rawData.map(({ updated_at, created_at, ...rest }) => rest);
     res.status(200).json(data);
-  } catch(err) {
-    res.status(400).send(`Error retrieving Warehouses: ${err}`)
+  } catch(error) {
+    console.error(error);
+    res.status(500).send(`Error retrieving Warehouses List: ${error}`);
   }
 }
 

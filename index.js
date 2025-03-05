@@ -1,17 +1,17 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
 import warehousesRoutes from "./routes/warehousesRoutes.js"
 
 const app = express();
 
 // Middleware
-app.use(cors());
+const { CORS_ORIGIN } = process.env;
+app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
 // Basic Route
-app.get("/" , warehousesRoutes); 
+app.use("/api/warehouses", warehousesRoutes);
 
 // Server Listening
 const PORT = process.env.PORT || 8080;
