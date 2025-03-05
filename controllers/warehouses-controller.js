@@ -23,8 +23,8 @@ const remove = async (req, res) => {
       .where({ id: req.params.id })
       .delete();
 
-      if (warehouseDeleted === 0) {
-        return res
+    if (warehouseDeleted === 0) {
+      return res
         .status(404)
         .json({ message: `Warehouse with ID ${req.params.id} not found` });
     }
