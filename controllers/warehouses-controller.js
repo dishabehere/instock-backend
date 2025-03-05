@@ -15,12 +15,16 @@ const index = async (_req, res) => {
 
 const remove = async (req, res) => {
   try {
-    const rowsDeleted = await knex("warehouses")
+    const inventoryDeleted = await knex("inventories")
+      .where({ warehouse_id: req.params.id })
+      .delete();
+
+    const warehouseDeleted = await knex("warehouses")
       .where({ id: req.params.id })
       .delete();
 
-    if (rowsDeleted === 0) {
-      return res
+      if (warehouseDeleted === 0) {
+        return res
         .status(404)
         .json({ message: `Warehouse with ID ${req.params.id} not found` });
     }
