@@ -4,19 +4,21 @@ const knex = initKnex(configuration);
 
 const index = async (_req, res) => {
   try {
-    const rawData = await knex('warehouses');
+    const rawData = await knex("warehouses");
     const data = rawData.map(({ updated_at, created_at, ...rest }) => rest);
     res.status(200).json(data);
-  } catch(error) {
+  } catch (error) {
     console.error(error);
     res.status(500).send(`Error retrieving Warehouses List: ${error}`);
   }
-}
+};
 
 //Get single warehouse
 const findOne = async (req, res) => {
   try {
-    const warehousesFound = await knex("warehouses").where({ id: req.params.id });
+    const warehousesFound = await knex("warehouses").where({
+      id: req.params.id,
+    });
 
     if (warehousesFound.length === 0) {
       return res.status(404).json({
@@ -25,8 +27,8 @@ const findOne = async (req, res) => {
     }
 
     const warehouseData = warehousesFound[0];
-    const { updated_at, created_at, ...responseData } = warehouseData;
-    res.status(200).json(responseData);
+    const { updated_at, created_at, ...data } = warehouseData;
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -34,7 +36,4 @@ const findOne = async (req, res) => {
     });
   }
 };
-export {
-  index,
-  findOne
-}
+export { index, findOne };
