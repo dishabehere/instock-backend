@@ -1,7 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import warehousesRoutes from "./routes/warehousesRoutes.js"
+import warehousesRoutes from "./routes/warehousesRoutes.js";
+import inventoriesRoutes from "./routes/inventoriesRoutes.js"
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // Basic Route
 app.use("/api/warehouses", warehousesRoutes);
+app.use("/api/inventories", inventoriesRoutes);
 
 // Server Listening
 const PORT = process.env.PORT || 8080;
