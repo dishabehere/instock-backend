@@ -14,7 +14,6 @@ const index = async (_req, res) => {
         warehouse_name: rest.warehouse_name,
       })
     );
-    console.log("called", data);
     res.status(200).json(data);
   } catch (error) {
     console.error(error);
