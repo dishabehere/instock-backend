@@ -25,8 +25,8 @@ const findOne = async (req, res) => {
     }
 
     const warehouseData = warehousesFound[0];
-    const { updated_at, created_at, ...responseData } = warehouseData;
-    res.status(200).json(responseData);
+    const { updated_at, created_at, ...data } = warehouseData;
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({

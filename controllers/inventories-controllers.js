@@ -36,10 +36,10 @@ const findOne = async (req, res) => {
       });
     }
 
-    const { updated_at, created_at, warehouse_id, ...responseData } =
+    const { updated_at, created_at, warehouse_id, ...data } =
       inventoryFound;
 
-    res.status(200).json(responseData);
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -48,4 +48,19 @@ const findOne = async (req, res) => {
   }
 };
 
-export { index, findOne };
+const getInventoriesByWarehouse = async (req, res) => {
+  try {
+    const warehouseInventories = await knex("inventories")
+      .where({warehouse_id: req.params.id})
+      .select('id', 'item_name', 'category', 'status', 'quantity')
+
+    res.status(200).json(warehouseInventories);
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({
+      message: `Unable to retrieve inventory data for warehouse ID ${req.params.id}`,
+    });
+  }
+};
+
+export { index, findOne, getInventoriesByWarehouse };
