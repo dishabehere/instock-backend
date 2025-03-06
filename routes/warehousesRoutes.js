@@ -1,18 +1,15 @@
-import express from 'express';
+import express from "express";
 import * as warehousesController from "../controllers/warehouses-controller.js";
 
 const router = express.Router();
 
 router
-    .route('/')
-    .get(warehousesController.index);
+.route("/")
+.get(warehousesController.index);
 
 router
-    .route('/:id')
-    .delete(warehousesController.remove);
-
-router
-.route("/:id")
-.get(warehousesController.findOne);
+  .route("/:id")
+  .get(warehousesController.findOne)
+  .delete(warehousesController.remove);
 
 export default router;
