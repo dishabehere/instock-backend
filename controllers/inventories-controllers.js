@@ -48,20 +48,27 @@ const findOne = async (req, res) => {
   }
 };
 
-const getInventoriesByWarehouse = async (req, res) => {
+//Delete inventory item
+const remove = async (req, res) => {
   try {
-    const warehouseInventories = await knex("inventories")
-      .where({warehouse_id: req.params.id})
-      .select('id', 'item_name', 'category', 'status', 'quantity')
+    const { id } = req.params;
+    const inventoryDeleted = await knex("inventories")
+      .where({ id })
+      .delete();
 
-    res.status(200).json(warehouseInventories);
+    if (inventoryDeleted === 0) {
+      return res.status(404).json({
+        message: `Inventory with ID ${id} not found`,
+      });
+    }
+
+    res.status(204).send();
   } catch (error) {
     console.error(error);
-    res.status(404).json({
-      message: `Unable to retrieve inventory data for warehouse ID ${req.params.id}`,
+    res.status(500).json({
+      message: `Error deleting inventory with ID ${req.params.id}`,
     });
   }
 };
 
-
-export { index, findOne, remove, getInventoriesByWarehouse };
+export { index, findOne, remove };
