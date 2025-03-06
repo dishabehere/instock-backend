@@ -10,5 +10,6 @@ router
 router
 .route('/:id')
 .get(inventoriesController.findOne)
+.delete(inventoriesController.remove);
 
 export default router;

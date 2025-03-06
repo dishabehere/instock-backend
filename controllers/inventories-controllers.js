@@ -48,4 +48,27 @@ const findOne = async (req, res) => {
   }
 };
 
-export { index, findOne };
+//Delete inventory item
+const remove = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const inventoryDeleted = await knex("inventories")
+      .where({ id })
+      .delete();
+
+    if (inventoryDeleted === 0) {
+      return res.status(404).json({
+        message: `Inventory with ID ${id} not found`,
+      });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: `Error deleting inventory with ID ${req.params.id}`,
+    });
+  }
+};
+
+export { index, findOne, remove };
