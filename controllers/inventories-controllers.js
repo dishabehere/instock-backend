@@ -36,10 +36,10 @@ const findOne = async (req, res) => {
       });
     }
 
-    const { updated_at, created_at, warehouse_id, ...responseData } =
+    const { updated_at, created_at, warehouse_id, ...data } =
       inventoryFound;
 
-    res.status(200).json(responseData);
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({
