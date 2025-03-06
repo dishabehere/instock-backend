@@ -72,9 +72,68 @@ const inventories = async (req, res) => {
   }
 };
 
+//Create new warehouse and add it
+
+const createWarehouse = async (req, res) => {
+  try {
+    const {
+      warehouse_name,
+      address,
+      city,
+      country,
+      contact_name,
+      contact_position,
+      contact_phone,
+      contact_email,
+    } = req.body;
+
+    if (!warehouse_name || !address || !city || !country || !contact_name || !contact_position || !contact_phone || !contact_email) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    if (!validator.isEmail(contact_email)) {
+      return res.status(400).json({ message: "Invalid email format." });
+    }
+
+    if (!validator.isMobilePhone(contact_phone, "any", { strictMode: false })) {
+      return res.status(400).json({ message: "Invalid phone number format." });
+    }
+
+    const [newWarehouse] = await knex("warehouses").insert(
+      {
+        warehouse_name,
+        address,
+        city,
+        country,
+        contact_name,
+        contact_position,
+        contact_phone,
+        contact_email,
+      },
+      [
+        "id",
+        "warehouse_name",
+        "address",
+        "city",
+        "country",
+        "contact_name",
+        "contact_position",
+        "contact_phone",
+        "contact_email",
+      ]
+    );
+
+    res.status(201).json(newWarehouse);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error creating warehouse." });
+  }
+};
+
 export {
   index,
   findOne,
   remove,
-  inventories
+  inventories,
+  createWarehouse
 }
