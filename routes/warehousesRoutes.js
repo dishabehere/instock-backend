@@ -6,7 +6,8 @@ const router = express.Router();
 
 router
 .route("/")
-.get(warehousesController.index);
+.get(warehousesController.index)
+.post(warehousesController.createWarehouse);
 
 router
   .route("/:id")
