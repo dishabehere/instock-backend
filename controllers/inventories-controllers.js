@@ -52,9 +52,7 @@ const findOne = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const { id } = req.params;
-    const inventoryDeleted = await knex("inventories")
-      .where({ id })
-      .delete();
+    const inventoryDeleted = await knex("inventories").where({ id }).delete();
 
     if (inventoryDeleted === 0) {
       return res.status(404).json({
@@ -71,4 +69,8 @@ const remove = async (req, res) => {
   }
 };
 
-export { index, findOne, remove };
+export 
+{ index, 
+  findOne, 
+  remove 
+};
