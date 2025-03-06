@@ -38,10 +38,6 @@ const findOne = async (req, res) => {
 //Delete warehouse and inventory
 const remove = async (req, res) => {
   try {
-    const inventoryDeleted = await knex("inventories")
-      .where({ warehouse_id: req.params.id })
-      .delete();
-
     const warehouseDeleted = await knex("warehouses")
       .where({ id: req.params.id })
       .delete();
