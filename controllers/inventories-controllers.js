@@ -51,27 +51,13 @@ const findOne = async (req, res) => {
 const getInventoriesByWarehouse = async (req, res) => {
   try {
     const warehouseInventories = await knex("inventories")
-      .select("inventories.*", "warehouses.warehouse_name")
-      .join("warehouses", "inventories.warehouse_id", "=", "warehouses.id")
-      .where("warehouses.id", req.params.id);
+      .where({warehouse_id: req.params.id})
+      .select('id', 'item_name', 'category', 'status', 'quantity')
 
-    if (warehouseInventories.length === 0) {
-      return res.status(404).json({
-        message: `Warehouse with ID ${req.params.id} not found or has no inventories`,
-      });
-    }
-
-    const data = warehouseInventories.map(
-      ({ updated_at, created_at, warehouse_id, ...rest }) => ({
-        ...rest,
-        warehouse_name: rest.warehouse_name,
-      })
-    );
-
-    res.status(200).json(data);
+    res.status(200).json(warehouseInventories);
   } catch (error) {
     console.error(error);
-    res.status(500).json({
+    res.status(404).json({
       message: `Unable to retrieve inventory data for warehouse ID ${req.params.id}`,
     });
   }

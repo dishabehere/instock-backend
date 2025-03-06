@@ -12,8 +12,6 @@ router
 .route('/:id')
 .get(inventoriesController.findOne);
 
-router
-.route('/:id/inventories')
-.get(inventoriesController.getInventoriesByWarehouse);
+
 
 export default router;
