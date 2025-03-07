@@ -11,6 +11,7 @@ router
 router
   .route("/:id")
   .get(warehousesController.findOne)
+  .put(warehousesController.update)
   .delete(warehousesController.remove);
 
 router
