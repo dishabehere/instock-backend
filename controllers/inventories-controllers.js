@@ -103,49 +103,43 @@ const add = async (req, res) => {
   }
 };
 
-// Update an inventory item
+// Update an existing inventory item
 const update = async (req, res) => {
   try {
+    console.log("called");
     const { id } = req.params;
     const { warehouse_id, item_name, description, category, status, quantity } = req.body;
 
-    // Check if all fields are provided
+    const existingInventory = await knex("inventories").where({ id }).first();
+    console.log("existing inventory", existingInventory, id);
+    if (!existingInventory) {
+      return res.status(404).json({ message: `Inventory with ID ${id} not found` });
+    }
+
     if (!warehouse_id || !item_name || !description || !category || !status || quantity === undefined) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
-    // Validate warehouse_id exists
     const warehouseExists = await knex("warehouses").where({ id: warehouse_id }).first();
     if (!warehouseExists) {
       return res.status(400).json({ message: "Invalid warehouse_id. Warehouse not found." });
     }
 
-    // Validate quantity is a number
     if (isNaN(quantity)) {
       return res.status(400).json({ message: "Quantity must be a number." });
     }
 
-    // Check if inventory item exists
-    const inventoryExists = await knex("inventories").where({ id }).first();
-    if (!inventoryExists) {
-      return res.status(404).json({ message: `Inventory with ID ${id} not found.` });
-    }
-
-    // Update the inventory item
     await knex("inventories")
       .where({ id })
-      .update({
-        warehouse_id,
-        item_name,
-        description,
-        category,
-        status,
-        quantity
-      });
+      .update(req.body);
 
-    // Fetch the updated inventory item
-    const updatedInventory = await knex("inventories").where({ id }).first();
-    const filteredInventory = excludeTimestamps(updatedInventory);
+    const updatedInventory = await knex("inventories")
+      .select("inventories.*", "warehouses.warehouse_name")
+      .join("warehouses", "inventories.warehouse_id", "=", "warehouses.id")
+      .where("inventories.id", id)
+      .first();
+
+    const { updated_at, created_at, ...filteredInventory } = updatedInventory;
 
     res.status(200).json(filteredInventory);
   } catch (error) {
@@ -153,6 +147,5 @@ const update = async (req, res) => {
     res.status(500).json({ message: "Error updating inventory item.", error: error.message });
   }
 };
-
 
 export { index, findOne, remove, add, update };
