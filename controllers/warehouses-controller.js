@@ -1,6 +1,6 @@
 import initKnex from "knex";
 import configuration from "../knexfile.js";
-import {excludeTimestamps, validateEmail, validatePhoneNumber} from '../functionsUtils.js';
+import {excludeTimestamps} from '../functionsUtils.js';
 const knex = initKnex(configuration);
 
 const index = async (_req, res) => {
@@ -74,6 +74,18 @@ const inventories = async (req, res) => {
 };
 
 //Create new warehouse and add it
+ 
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePhoneNumber = (phoneNumber) => {
+  const phoneRegex =
+    /^(\+\d{1,3}[-]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$/;
+  return phoneRegex.test(phoneNumber);
+};
+
 const add = async (req, res) => {
   try {
     const {
