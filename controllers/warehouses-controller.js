@@ -1,5 +1,6 @@
 import initKnex from "knex";
 import configuration from "../knexfile.js";
+import {excludeTimestamps} from '../functionsUtils.js';
 const knex = initKnex(configuration);
 
 const index = async (_req, res) => {
@@ -82,11 +83,6 @@ const validatePhoneNumber = (phoneNumber) => {
   const phoneRegex =
     /^(\+\d{1,3}[-]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$/;
   return phoneRegex.test(phoneNumber);
-};
-
-const excludeTimestamps = (obj) => {
-  const { created_at, updated_at, ...rest } = obj;
-  return rest;
 };
 
 const add = async (req, res) => {

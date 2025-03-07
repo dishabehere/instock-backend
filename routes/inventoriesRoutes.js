@@ -5,11 +5,13 @@ import * as inventoriesController from "../controllers/inventories-controllers.j
 const router = express.Router();
 
 router.route("/")
-.get(inventoriesController.index);
+.get(inventoriesController.index)
+.post(inventoriesController.add);
 
 router
 .route("/:id")
 .get(inventoriesController.findOne)
 .delete(inventoriesController.remove);
+
 
 export default router;

@@ -1,5 +1,6 @@
 import initKnex from "knex";
 import configuration from "../knexfile.js";
+import {excludeTimestamps} from '../functionsUtils.js';
 const knex = initKnex(configuration);
 
 const index = async (_req, res) => {
@@ -71,4 +72,35 @@ const remove = async (req, res) => {
   }
 };
 
-export { index, findOne, remove };
+// Create a new inventory item
+const add = async (req, res) => {
+  try {
+    const { warehouse_id, item_name, description, category, status, quantity } = req.body;
+
+    if (!warehouse_id || !item_name || !description || !category || !status || quantity === undefined) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const warehouseExists = await knex("warehouses").where({ id: warehouse_id }).first();
+    if (!warehouseExists) {
+      return res.status(400).json({ message: "Invalid warehouse_id. Warehouse not found." });
+    }
+
+    if (isNaN(quantity)) {
+      return res.status(400).json({ message: "Quantity must be a number." });
+    }
+
+    const [newInventoryId] = await knex("inventories")
+      .insert(req.body);
+
+    const createdInventory = await knex("inventories").where({ id: newInventoryId }).first();
+    const filteredInventory = excludeTimestamps(createdInventory);
+
+    res.status(201).json(filteredInventory);
+  } catch (error) {
+    console.error("Database Error:", error);
+    res.status(500).json({ message: "Error creating inventory item.", error: error.message });
+  }
+};
+
+export { index, findOne, remove, add };
