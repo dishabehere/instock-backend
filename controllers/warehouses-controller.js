@@ -1,6 +1,6 @@
 import initKnex from "knex";
 import configuration from "../knexfile.js";
-import {excludeTimestamps} from '../functionsUtils.js';
+import {excludeTimestamps, validateEmail, validatePhoneNumber} from '../Utils/functionsUtils.js';
 const knex = initKnex(configuration);
 
 const index = async (_req, res) => {
@@ -74,16 +74,6 @@ const inventories = async (req, res) => {
 };
 
 //Create new warehouse and add it
-const validateEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-const validatePhoneNumber = (phoneNumber) => {
-  const phoneRegex =
-    /^(\+\d{1,3}[-]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$/;
-  return phoneRegex.test(phoneNumber);
-};
 
 const add = async (req, res) => {
   try {
@@ -98,7 +88,6 @@ const add = async (req, res) => {
       contact_email,
     } = req.body;
 
-    // Check if all required fields are present
     if (
       !warehouse_name ||
       !address ||
@@ -112,12 +101,10 @@ const add = async (req, res) => {
       return res.status(400).json({ message: "All fields are required." });
     }
 
-    // Validate email
     if (!validateEmail(contact_email)) {
       return res.status(400).json({ message: "Invalid email format." });
     }
 
-    // Validate phone number
     if (!validatePhoneNumber(contact_phone)) {
       return res.status(400).json({ message: "Invalid phone number format." });
     }
@@ -136,10 +123,56 @@ const add = async (req, res) => {
   }
 };
 
+// Update an existing warehouse
+const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      warehouse_name,
+      address,
+      city,
+      country,
+      contact_name,
+      contact_position,
+      contact_phone,
+      contact_email,
+    } = req.body;
+
+    const existingWarehouse = await knex("warehouses").where({ id }).first();
+    if (!existingWarehouse) {
+      return res.status(404).json({ message: `Warehouse with ID ${id} not found` });
+    }
+
+    if (!warehouse_name || !address || !city || !country || !contact_name || !contact_position || !contact_phone || !contact_email) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    if (!validateEmail(contact_email)) {
+      return res.status(400).json({ message: "Invalid email format." });
+    }
+
+    if (!validatePhoneNumber(contact_phone)) {
+      return res.status(400).json({ message: "Invalid phone number format." });
+    }
+
+    await knex("warehouses").where({ id }).update(req.body);
+    
+    const updatedWarehouse = await knex("warehouses").where({ id }).first();
+    const { updated_at, created_at, ...filteredWarehouse } = updatedWarehouse;
+
+    res.status(200).json(filteredWarehouse);
+  } catch (error) {
+    console.error("Database Error:", error);
+    res.status(500).json({ message: "Error updating warehouse.", error: error.message });
+  }
+};
+
+
 export {
   index,
   findOne,
   remove,
   inventories,
-  add
+  add,
+  update
 }
