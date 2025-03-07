@@ -72,9 +72,78 @@ const inventories = async (req, res) => {
   }
 };
 
+//Create new warehouse and add it
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePhoneNumber = (phoneNumber) => {
+  const phoneRegex =
+    /^(\+\d{1,3}[-]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$/;
+  return phoneRegex.test(phoneNumber);
+};
+
+const excludeTimestamps = (obj) => {
+  const { created_at, updated_at, ...rest } = obj;
+  return rest;
+};
+
+const add = async (req, res) => {
+  try {
+    const {
+      warehouse_name,
+      address,
+      city,
+      country,
+      contact_name,
+      contact_position,
+      contact_phone,
+      contact_email,
+    } = req.body;
+
+    // Check if all required fields are present
+    if (
+      !warehouse_name ||
+      !address ||
+      !city ||
+      !country ||
+      !contact_name ||
+      !contact_position ||
+      !contact_phone ||
+      !contact_email
+    ) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    // Validate email
+    if (!validateEmail(contact_email)) {
+      return res.status(400).json({ message: "Invalid email format." });
+    }
+
+    // Validate phone number
+    if (!validatePhoneNumber(contact_phone)) {
+      return res.status(400).json({ message: "Invalid phone number format." });
+    }
+
+    const [newWarehouseId] = await knex("warehouses").insert(req.body);
+    const [createdWarehouse] = await knex("warehouses").where({
+      id: newWarehouseId,
+    });
+    const filteredWarehouse = excludeTimestamps(createdWarehouse);
+
+    res.status(201).json(filteredWarehouse);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating warehouse.", error: error.message });
+  }
+};
+
 export {
   index,
   findOne,
   remove,
-  inventories
+  inventories,
+  add
 }
