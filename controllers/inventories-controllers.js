@@ -1,6 +1,6 @@
 import initKnex from "knex";
 import configuration from "../knexfile.js";
-import {excludeTimestamps} from '../functionsUtils.js';
+import {excludeTimestamps} from '../Utils/functionsUtils.js';
 const knex = initKnex(configuration);
 
 const index = async (_req, res) => {
