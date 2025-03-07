@@ -71,4 +71,40 @@ const remove = async (req, res) => {
   }
 };
 
-export { index, findOne, remove };
+// Create a new inventory item
+const add = async (req, res) => {
+  try {
+    const { warehouse_id, item_name, description, category, status, quantity } = req.body;
+
+    // Validate required fields
+    if (!warehouse_id || !item_name || !description || !category || !status || quantity === undefined) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    // Validate warehouse_id exists in the warehouses table
+    const warehouseExists = await knex("warehouses").where({ id: warehouse_id }).first();
+    if (!warehouseExists) {
+      return res.status(400).json({ message: "Invalid warehouse_id. Warehouse not found." });
+    }
+
+    // Validate quantity is a number
+    if (isNaN(quantity)) {
+      return res.status(400).json({ message: "Quantity must be a number." });
+    }
+
+    // Insert new inventory item
+    const [newInventoryId] = await knex("inventories")
+      .insert(req.body)
+      .returning("id");
+
+    // Retrieve newly created item
+    const createdInventory = await knex("inventories").where({ id: newInventoryId }).first();
+
+    res.status(201).json(createdInventory);
+  } catch (error) {
+    console.error("Database Error:", error);
+    res.status(500).json({ message: "Error creating inventory item.", error: error.message });
+  }
+};
+
+export { index, findOne, remove, add };
