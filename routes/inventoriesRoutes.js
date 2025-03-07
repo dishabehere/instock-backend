@@ -11,7 +11,8 @@ router.route("/")
 router
 .route("/:id")
 .get(inventoriesController.findOne)
-.delete(inventoriesController.remove);
+.delete(inventoriesController.remove)
+.put(inventoriesController.update);
 
 
 export default router;
