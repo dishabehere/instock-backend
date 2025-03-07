@@ -136,10 +136,62 @@ const add = async (req, res) => {
   }
 };
 
+// Update an existing warehouse
+const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      warehouse_name,
+      address,
+      city,
+      country,
+      contact_name,
+      contact_position,
+      contact_phone,
+      contact_email,
+    } = req.body;
+
+    // Check if warehouse exists
+    const existingWarehouse = await knex("warehouses").where({ id }).first();
+    if (!existingWarehouse) {
+      return res.status(404).json({ message: `Warehouse with ID ${id} not found` });
+    }
+
+    // Validate required fields
+    if (!warehouse_name || !address || !city || !country || !contact_name || !contact_position || !contact_phone || !contact_email) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    // Validate email
+    if (!validateEmail(contact_email)) {
+      return res.status(400).json({ message: "Invalid email format." });
+    }
+
+    // Validate phone number
+    if (!validatePhoneNumber(contact_phone)) {
+      return res.status(400).json({ message: "Invalid phone number format." });
+    }
+
+    // Update the warehouse
+    await knex("warehouses").where({ id }).update(req.body);
+    
+    // Fetch the updated warehouse
+    const updatedWarehouse = await knex("warehouses").where({ id }).first();
+    const { updated_at, created_at, ...filteredWarehouse } = updatedWarehouse;
+
+    res.status(200).json(filteredWarehouse);
+  } catch (error) {
+    console.error("Database Error:", error);
+    res.status(500).json({ message: "Error updating warehouse.", error: error.message });
+  }
+};
+
+
 export {
   index,
   findOne,
   remove,
   inventories,
-  add
+  add,
+  update
 }
